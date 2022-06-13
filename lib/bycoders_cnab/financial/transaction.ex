@@ -4,6 +4,8 @@ defmodule BycodersCnab.Financial.Transaction do
 
   alias BycodersCnab.Financial.TransactionType
 
+  @all_fields ~w[transaction_type amount cpf card owner_name trading_name occurred_at]a
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "transactions" do
@@ -21,23 +23,8 @@ defmodule BycodersCnab.Financial.Transaction do
   @doc false
   def changeset(transaction, attrs) do
     transaction
-    |> cast(attrs, [
-      :transaction_type,
-      :amount,
-      :cpf,
-      :card,
-      :owner_name,
-      :trading_name,
-      :occurred_at
-    ])
-    |> validate_required([
-      :transaction_type,
-      :amount,
-      :cpf,
-      :card,
-      :owner_name,
-      :trading_name,
-      :occurred_at
-    ])
+    |> cast(attrs, @all_fields)
+    |> validate_required(@all_fields)
+    |> unique_constraint(@all_fields, name: :unique_transaction_index)
   end
 end
