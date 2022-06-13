@@ -26,6 +26,8 @@ config :bycoders_cnab, BycodersCnabWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :bycoders_cnab, BycodersCnab.Mailer, adapter: Swoosh.Adapters.Local
 
+config :bycoders_cnab, :cnab_parser, BycodersCnab.Parser.CNABParserImpl
+
 # Swoosh API client is needed for adapters other than SMTP.
 config :swoosh, :api_client, false
 
