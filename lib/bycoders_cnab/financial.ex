@@ -49,4 +49,9 @@ defmodule BycodersCnab.Financial do
       "CNAB file #{filename} with #{total} lines in total was processed. Lines parsed with success: #{Enum.count(parsed)}. Lines with error: #{Enum.count(errors)}."
     )
   end
+
+  def get_transactions(sort_options \\ [asc: :trading_name, asc: :occurred_at]) do
+    from(t in Transaction, order_by: ^sort_options)
+    |> Repo.all()
+  end
 end

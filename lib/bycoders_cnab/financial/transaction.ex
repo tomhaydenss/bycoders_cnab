@@ -4,6 +4,8 @@ defmodule BycodersCnab.Financial.Transaction do
 
   alias BycodersCnab.Financial.TransactionType
 
+  @type t :: %__MODULE__{}
+
   @all_fields ~w[transaction_type amount cpf card owner_name trading_name occurred_at]a
 
   @primary_key {:id, :binary_id, autogenerate: true}
