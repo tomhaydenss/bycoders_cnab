@@ -3,6 +3,7 @@ defmodule BycodersCnabWeb.SchemaTest do
 
   import BycodersCnab.TestHelpers
 
+  alias BycodersCnab.Financial
   alias BycodersCnab.Financial.Transaction
   alias BycodersCnab.Financial.TransactionType
   alias BycodersCnab.Repo
@@ -16,6 +17,7 @@ defmodule BycodersCnabWeb.SchemaTest do
 
     test "successfully", %{conn: conn} do
       filename = "valid_cnab_file.txt"
+
       cnab_file = %Plug.Upload{
         content_type: "text/plain",
         path: path_to_fixture(filename),
@@ -27,7 +29,7 @@ defmodule BycodersCnabWeb.SchemaTest do
         |> post("/api/graphql", %{query: @upload_file_mutation, cnab_file: cnab_file})
         |> json_response(200)
 
-      assert %{"data" => %{"uploadFile" => "file_uploaded_succesfully"}} == body
+      assert %{"data" => %{"uploadFile" => "file_uploaded_succesfully"}} = body
 
       records = Repo.all(Transaction)
       assert [first, second, third, fourth] = records
@@ -69,6 +71,7 @@ defmodule BycodersCnabWeb.SchemaTest do
     @tag :capture_log
     test "with no records imported", %{conn: conn} do
       filename = "invalid_cnab_file.txt"
+
       cnab_file = %Plug.Upload{
         content_type: "text/plain",
         path: path_to_fixture(filename),
@@ -82,7 +85,87 @@ defmodule BycodersCnabWeb.SchemaTest do
 
       assert %{"data" => %{"uploadFile" => "file_uploaded_succesfully"}} == body
 
-      [] = Repo.all(Transaction)
+      assert [] = Repo.all(Transaction)
+    end
+  end
+
+  describe "querying company transactions" do
+    @company_transactions_query """
+    query {
+      companyTransactions {
+        balance
+        ownerName
+        tradingName
+        transactions {
+          amount
+          card
+          cpf
+          occurredAt
+          transactionType
+        }
+      }
+    }
+    """
+
+    test "with no records", %{conn: conn} do
+      body =
+        conn
+        |> post("/api/graphql", %{query: @company_transactions_query})
+        |> json_response(200)
+
+      assert %{"data" => %{"companyTransactions" => []}} == body
+    end
+
+    test "with records imported into database", %{conn: conn} do
+      import_records_from("CNAB.txt")
+
+      body =
+        conn
+        |> post("/api/graphql", %{query: @company_transactions_query})
+        |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "companyTransactions" => [
+                   %{
+                     "balance" => "-102.0",
+                     "ownerName" => "JOÃO MACEDO",
+                     "tradingName" => "BAR DO JOÃO"
+                   },
+                   %{
+                     "balance" => "152.32",
+                     "ownerName" => "MARIA JOSEFINA",
+                     "tradingName" => "LOJA DO Ó - FILIAL"
+                   },
+                   %{
+                     "balance" => "230.0",
+                     "ownerName" => "MARIA JOSEFINA",
+                     "tradingName" => "LOJA DO Ó - MATRIZ"
+                   },
+                   %{
+                     "balance" => "489.2",
+                     "ownerName" => "MARCOS PEREIRA",
+                     "tradingName" => "MERCADO DA AVENIDA"
+                   },
+                   %{
+                     "balance" => "-7023.0",
+                     "ownerName" => "JOSÉ COSTA",
+                     "tradingName" => "MERCEARIA 3 IRMÃOS"
+                   }
+                 ]
+               }
+             } = body
+    end
+
+    defp import_records_from(filename) do
+      file_path = path_to_fixture(filename)
+
+      file_param = %{
+        path: file_path,
+        filename: filename
+      }
+
+      Financial.create_transaction_from_file(file_param)
     end
   end
 end
