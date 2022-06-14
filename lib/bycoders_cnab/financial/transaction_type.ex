@@ -12,4 +12,8 @@ defmodule BycodersCnab.Financial.TransactionType do
   ]
 
   def values(), do: @enum_values
+
+  def for(id) do
+    Enum.find_value(@enum_values, fn {enum, key} -> if key == id, do: enum end)
+  end
 end

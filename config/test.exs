@@ -23,8 +23,10 @@ config :bycoders_cnab, BycodersCnabWeb.Endpoint,
 # In test we don't send emails.
 config :bycoders_cnab, BycodersCnab.Mailer, adapter: Swoosh.Adapters.Test
 
-# Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, :console, level: :warn
+config :logger, level: :info
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :bycoders_cnab, :cnab_parser, BycodersCnab.Parser.CNABParserMock
