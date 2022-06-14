@@ -51,7 +51,10 @@ defmodule BycodersCnab.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:timex, "~> 3.7"},
-      {:mox, "~> 1.0", only: :test}
+      {:mox, "~> 1.0", only: :test},
+      {:absinthe_plug, "~> 1.5"},
+      {:absinthe, "~> 1.7"},
+      {:absinthe_error_payload, "~> 1.1"}
     ]
   end
 

@@ -33,6 +33,8 @@ defmodule BycodersCnabWeb.ConnCase do
 
   setup tags do
     BycodersCnab.DataCase.setup_sandbox(tags)
+    Mox.stub_with(BycodersCnab.Parser.CNABParserMock, BycodersCnab.Parser.CNABParserImpl)
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

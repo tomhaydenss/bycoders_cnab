@@ -20,10 +20,15 @@ defmodule BycodersCnabWeb.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", BycodersCnabWeb do
-  #   pipe_through :api
-  # end
+  scope "/api" do
+    pipe_through :api
+
+    forward("/graphql", Absinthe.Plug, schema: BycodersCnabWeb.Schema)
+
+    if Mix.env() == :dev do
+      forward("/graphiql", Absinthe.Plug.GraphiQL, schema: BycodersCnabWeb.Schema)
+    end
+  end
 
   # Enables LiveDashboard only for development
   #

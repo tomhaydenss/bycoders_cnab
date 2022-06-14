@@ -13,8 +13,6 @@ defmodule BycodersCnab.FinancialTest do
   alias BycodersCnab.Repo
 
   describe "create_transaction/1" do
-    alias BycodersCnab.Financial.Transaction
-
     @invalid_attrs %{
       amount: nil,
       card: nil,
