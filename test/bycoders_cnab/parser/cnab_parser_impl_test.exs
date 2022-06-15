@@ -3,9 +3,9 @@ defmodule BycodersCnab.Parser.CNABParserImplTest do
 
   import BycodersCnab.TestHelpers
 
-  alias BycodersCnab.Parser.CNABParserImpl
   alias BycodersCnab.Parser.CNABFileSummary
   alias BycodersCnab.Parser.CNABLine
+  alias BycodersCnab.Parser.CNABParserImpl
 
   describe "parse/1" do
     test "should parse a valid cnab file" do

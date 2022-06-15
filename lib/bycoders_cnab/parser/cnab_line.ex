@@ -1,9 +1,9 @@
 defmodule BycodersCnab.Parser.CNABLine do
-  defstruct ~w[transaction_type date amount cpf card time owner_name trading_name]a
-
-  @typedoc """
+  @moduledoc """
     Type that represents a line of CNAB file.
   """
+
+  defstruct ~w[transaction_type date amount cpf card time owner_name trading_name]a
 
   @type t :: %__MODULE__{
           transaction_type: pos_integer(),

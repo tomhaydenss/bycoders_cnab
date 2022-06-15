@@ -7,9 +7,9 @@ defmodule BycodersCnab.FinancialTest do
   alias BycodersCnab.Financial
   alias BycodersCnab.Financial.Transaction
   alias BycodersCnab.Financial.TransactionType
-  alias BycodersCnab.Parser.CNABParserMock
   alias BycodersCnab.Parser.CNABFileSummary
   alias BycodersCnab.Parser.CNABLine
+  alias BycodersCnab.Parser.CNABParserMock
   alias BycodersCnab.Repo
 
   describe "create_transaction/1" do
@@ -171,7 +171,7 @@ defmodule BycodersCnab.FinancialTest do
     end
   end
 
-  defp random_transaction_type() do
+  defp random_transaction_type do
     Ecto.Enum.values(BycodersCnab.Financial.Transaction, :transaction_type)
     |> Enum.take_random(1)
     |> hd()

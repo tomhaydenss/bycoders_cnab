@@ -10,7 +10,11 @@ defmodule BycodersCnab.MixProject do
       compilers: [:gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        ignore_warnings: ".dialyzer_ignore.exs"
+      ]
     ]
   end
 
@@ -54,7 +58,9 @@ defmodule BycodersCnab.MixProject do
       {:mox, "~> 1.0", only: :test},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe, "~> 1.7"},
-      {:absinthe_error_payload, "~> 1.1"}
+      {:absinthe_error_payload, "~> 1.1"},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -70,7 +76,14 @@ defmodule BycodersCnab.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["esbuild default --minify", "phx.digest"],
+      quality: ["format", "credo --strict", "test", "dialyzer"],
+      "quality.ci": [
+        "test",
+        "format --check-formatted",
+        "credo --strict",
+        "dialyzer --halt-exit-status"
+      ]
     ]
   end
 end

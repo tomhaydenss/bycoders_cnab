@@ -36,7 +36,7 @@ defmodule BycodersCnab.Financial do
     end)
   end
 
-  defp cnab_parser() do
+  defp cnab_parser do
     Application.get_env(:bycoders_cnab, :cnab_parser)
   end
 

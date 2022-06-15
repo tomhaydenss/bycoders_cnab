@@ -1,4 +1,8 @@
 defmodule BycodersCnabWeb.Schema do
+  @moduledoc """
+    The Absinthe schema definition for GraphQL API.
+  """
+
   use Absinthe.Schema
   alias BycodersCnabWeb.Resolvers
 

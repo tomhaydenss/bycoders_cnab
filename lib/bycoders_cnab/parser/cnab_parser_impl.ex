@@ -1,4 +1,7 @@
 defmodule BycodersCnab.Parser.CNABParserImpl do
+  @moduledoc """
+  Concret implementation of a CNABParser behaviour
+  """
   @behaviour BycodersCnab.Parser.CNABParser
 
   alias BycodersCnab.Parser.CNABFileSummary
@@ -19,25 +22,27 @@ defmodule BycodersCnab.Parser.CNABParserImpl do
   @impl true
   @callback parse(file_path :: String.t()) :: {:ok, CNABFileSummary.t()} | {:error, term()}
   def parse(file_path) do
-    result = file_path
-    |> File.stream!()
-    |> Enum.map(&String.trim(&1, "\n"))
-    |> Enum.map(&parse_line/1)
-    |> Enum.with_index()
-    |> Enum.reduce(
-      CNABFileSummary.new(),
-      fn
-        {{:ok, parsed_content}, _idx}, acc ->
-          %{acc | parsed: acc.parsed ++ [parsed_content], total: acc.total + 1}
+    result =
+      file_path
+      |> File.stream!()
+      |> Enum.map(&String.trim(&1, "\n"))
+      |> Enum.map(&parse_line/1)
+      |> Enum.with_index()
+      |> Enum.reduce(
+        CNABFileSummary.new(),
+        fn
+          {{:ok, parsed_content}, _idx}, acc ->
+            %{acc | parsed: acc.parsed ++ [parsed_content], total: acc.total + 1}
 
-        {{:error, reason}, idx}, acc ->
-          %{
-            acc
-            | with_error: acc.with_error ++ [{idx + 1, reason}],
-              total: acc.total + 1
-          }
-      end
-    )
+          {{:error, reason}, idx}, acc ->
+            %{
+              acc
+              | with_error: acc.with_error ++ [{idx + 1, reason}],
+                total: acc.total + 1
+            }
+        end
+      )
+
     {:ok, result}
   end
 

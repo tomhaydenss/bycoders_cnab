@@ -1,4 +1,8 @@
 defmodule BycodersCnab.Financial.Transaction do
+  @moduledoc """
+    Schema definition to represents financial transactions of a company
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

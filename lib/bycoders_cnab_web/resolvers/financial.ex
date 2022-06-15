@@ -1,4 +1,8 @@
 defmodule BycodersCnabWeb.Resolvers.Financial do
+  @moduledoc """
+    A context to provide financial operations
+  """
+
   alias BycodersCnab.Financial
   alias BycodersCnabWeb.Resolvers.DTOs.CompanyTransactions
 

@@ -1,7 +1,11 @@
 defmodule BycodersCnabWeb.Schema.FinancialTypes do
+  @moduledoc """
+    Data definitions used on GraphQL API
+  """
+
   use Absinthe.Schema.Notation
 
-  import_types Absinthe.Type.Custom
+  import_types(Absinthe.Type.Custom)
 
   @desc "Transaction Types"
   enum :transaction_type do

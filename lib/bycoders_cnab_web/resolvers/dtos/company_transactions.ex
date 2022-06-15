@@ -1,4 +1,8 @@
 defmodule BycodersCnabWeb.Resolvers.DTOs.CompanyTransactions do
+  @moduledoc """
+    Converts Transactions from ecto schema into a data struct to be used by a GraphQL client
+  """
+
   alias BycodersCnab.Financial.Transaction
   alias BycodersCnab.Financial.TransactionType
 

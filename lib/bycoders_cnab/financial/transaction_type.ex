@@ -1,4 +1,8 @@
 defmodule BycodersCnab.Financial.TransactionType do
+  @moduledoc """
+    Enum for all types of financial transactions
+  """
+
   @enum_values [
     debito: 1,
     boleto: 2,
@@ -23,7 +27,7 @@ defmodule BycodersCnab.Financial.TransactionType do
     aluguel: :expense
   ]
 
-  def values(), do: @enum_values
+  def values, do: @enum_values
 
   def for(id) do
     Enum.find_value(@enum_values, fn {enum, key} -> if key == id, do: enum end)
