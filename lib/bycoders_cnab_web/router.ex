@@ -1,6 +1,7 @@
 defmodule BycodersCnabWeb.Router do
   use BycodersCnabWeb, :router
 
+  # coveralls-ignore-start
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -57,4 +58,6 @@ defmodule BycodersCnabWeb.Router do
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
+
+  # coveralls-ignore-stop
 end

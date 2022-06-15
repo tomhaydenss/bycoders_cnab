@@ -14,6 +14,13 @@ defmodule BycodersCnab.MixProject do
       dialyzer: [
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
         ignore_warnings: ".dialyzer_ignore.exs"
+      ],
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
       ]
     ]
   end
@@ -60,7 +67,8 @@ defmodule BycodersCnab.MixProject do
       {:absinthe, "~> 1.7"},
       {:absinthe_error_payload, "~> 1.1"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.10", only: [:dev, :test]}
     ]
   end
 
@@ -77,11 +85,12 @@ defmodule BycodersCnab.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"],
-      quality: ["format", "credo --strict", "test", "dialyzer"],
+      quality: ["format", "credo --strict", "coveralls.html", "dialyzer"],
       "quality.ci": [
         "test",
         "format --check-formatted",
         "credo --strict",
+        "coveralls.html --raise",
         "dialyzer --halt-exit-status"
       ]
     ]

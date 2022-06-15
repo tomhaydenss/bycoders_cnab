@@ -1,0 +1,17 @@
+{
+    "skip_files": [
+        "lib/bycoders_cnab/application.ex",
+        "lib/bycoders_cnab_web.ex",
+        "lib/bycoders_cnab_web/telemetry.ex",
+        "lib/bycoders_cnab_web/views/error_helpers.ex",
+        "test"
+    ],
+    "coverage_options": {
+        "treat_no_relevant_lines_as_covered": true,
+        "output_dir": "cover/",
+        "minimum_coverage": 95
+    },
+    "terminal_options": {
+        "file_column_width": 100
+    }
+}
