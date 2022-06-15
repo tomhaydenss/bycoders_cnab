@@ -13,14 +13,18 @@ defmodule BycodersCnab.MixProject do
       deps: deps(),
       dialyzer: [
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        plt_add_apps: [:mix, :ex_unit],
         ignore_warnings: ".dialyzer_ignore.exs"
       ],
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
+        sobelow: :test,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
-        "coveralls.html": :test
+        "coveralls.html": :test,
+        quality: :test,
+        "quality.ci": :test
       ]
     ]
   end
@@ -68,7 +72,8 @@ defmodule BycodersCnab.MixProject do
       {:absinthe_error_payload, "~> 1.1"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.10", only: [:dev, :test]}
+      {:excoveralls, "~> 0.10", only: [:dev, :test]},
+      {:sobelow, "~> 0.8", only: [:dev, :test]}
     ]
   end
 
@@ -85,13 +90,14 @@ defmodule BycodersCnab.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"],
-      quality: ["format", "credo --strict", "coveralls.html", "dialyzer"],
+      quality: ["format", "credo --strict", "coveralls.html"],
       "quality.ci": [
         "test",
         "format --check-formatted",
         "credo --strict",
         "coveralls.html --raise",
-        "dialyzer --halt-exit-status"
+        "dialyzer",
+        "sobelow --config"
       ]
     ]
   end
