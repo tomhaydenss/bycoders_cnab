@@ -1,5 +1,6 @@
-import React from "react";
-import { useMutation, gql } from '@apollo/client'
+import React, { useEffect, useState } from "react";
+import { useMutation, useQuery, gql } from '@apollo/client'
+import CompanyTransactions from './CompanyTransactions';
 
 const UPLOAD_FILE = gql`
   mutation UploadFile($file: Upload!) {
@@ -7,8 +8,31 @@ const UPLOAD_FILE = gql`
   }
 `
 
+const COMPANY_TRANSACTIONS = gql`
+  query {
+    companyTransactions {
+      balance
+      ownerName
+      tradingName
+      transactions {
+        amount
+        card
+        cpf
+        occurredAt
+        transactionType
+      } 
+    } 
+  }
+`;
+
 export default function Home() {
-  const [uploadFile] = useMutation(UPLOAD_FILE);
+
+
+  const [uploadFile] = useMutation(UPLOAD_FILE, {
+    refetchQueries: [
+      COMPANY_TRANSACTIONS
+    ]
+  });
 
   function onChange({
     target: {
@@ -21,12 +45,26 @@ export default function Home() {
     }
   }
 
+  const companyTransactionsResult = useQuery(COMPANY_TRANSACTIONS);
+  const { data: companyTransactionsData } = companyTransactionsResult
+  const [companyTransactions, setCompanyTransactions] = useState([]);
+  useEffect(() => {
+    if (companyTransactionsData) {
+      setCompanyTransactions(companyTransactionsData.companyTransactions);
+    }
+  }, [companyTransactionsData]);
+
   return (
     <div className="app">
       <h1>CNAB File Parsing</h1>
       <div className="file-upload">
         <h3>Choose a CNAB file for upload</h3>
         <input type="file" required onChange={onChange} />
+      </div>
+      <hr />
+      <div className="company-transactions">
+        <h3>Company Transaction Details</h3>
+        <CompanyTransactions items={companyTransactions} />
       </div>
     </div>
   )
