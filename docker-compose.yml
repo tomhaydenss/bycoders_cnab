@@ -1,0 +1,23 @@
+version: '3.6'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 5432:5432
+    restart: always
+  app:
+    build:
+      context: .
+    command: /bin/sh bin/entrypoint.sh
+    environment:
+      MIX_ENV: dev
+      DATABASE_URL: postgres://postgres:postgres@db:5432/bycoders_cnab
+    ports:
+      - '4000:4000'
+    restart: on-failure
+    depends_on:
+      - db
