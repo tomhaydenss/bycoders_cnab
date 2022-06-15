@@ -1,19 +1,21 @@
 import React from 'react'
-import Transaction from "./Transaction";
+import Transactions from "./Transactions";
 
 export default function CompanyTransactions({ items }) {
-  return (
-    items.map((company, idx) => (
-      <div key={idx}>
-        Company {company.tradingName} owned by {company.ownerName} with balance {company.balance}<br />
-        Financial Transactions:
+  if (items.length > 0) {
+    return (
+      <div className="company-transactions">
+        <h3>Company Transaction Details</h3>
         {
-          company.transactions.map((transaction, idx) =>
-            <Transaction transaction={transaction} key={idx} />
-          )
+          items.map((company, idx) => (
+            <div key={idx} className="company">
+              <div className="company-info">Company {company.tradingName} owned by {company.ownerName} with balance {company.balance}</div>
+              <Transactions items={company.transactions} />
+            </div>
+
+          ))
         }
       </div>
-
-    ))
-  )
+    )
+  }
 }

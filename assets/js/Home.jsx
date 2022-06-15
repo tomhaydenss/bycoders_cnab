@@ -62,10 +62,8 @@ export default function Home() {
         <input type="file" required onChange={onChange} />
       </div>
       <hr />
-      <div className="company-transactions">
-        <h3>Company Transaction Details</h3>
-        <CompanyTransactions items={companyTransactions} />
-      </div>
+
+      <CompanyTransactions items={companyTransactions} />
     </div>
   )
 }
