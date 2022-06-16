@@ -1,85 +1,305 @@
-# Desafio programação - para vaga desenvolvedor
+# cnab_file |> parse()
 
-Por favor leiam este documento do começo ao fim, com muita atenção.
-O intuito deste teste é avaliar seus conhecimentos técnicos em programação.
-O teste consiste em parsear [este arquivo de texto(CNAB)](https://github.com/ByCodersTec/desafio-ruby-on-rails/blob/master/CNAB.txt) e salvar suas informações(transações financeiras) em uma base de dados a critério do candidato.
-Este desafio deve ser feito por você em sua casa. Gaste o tempo que você quiser, porém normalmente você não deve precisar de mais do que algumas horas.
+This is an application created aimed to fulfill the following challenge: [Desafio programação - para vaga desenvolvedor](https://github.com/ByCodersTec/desafio-dev)
 
-# Instruções de entrega do desafio
+## Configuring local environment
 
-1. Primeiro, faça um fork deste projeto para sua conta no Github (crie uma se você não possuir).
-2. Em seguida, implemente o projeto tal qual descrito abaixo, em seu clone local.
-3. Por fim, envie via email o projeto ou o fork/link do projeto para seu contato Bycoders_ com cópia para rh@bycoders.com.br.
+In order to run the application locally you must setup your local environment following the instructions bellow.
 
-# Descrição do projeto
+First we need to build our Docker images:
 
-Você recebeu um arquivo CNAB com os dados das movimentações finanaceira de várias lojas.
-Precisamos criar uma maneira para que estes dados sejam importados para um banco de dados.
+    $ docker-compose build
 
-Sua tarefa é criar uma interface web que aceite upload do [arquivo CNAB](https://github.com/ByCodersTec/desafio-ruby-on-rails/blob/master/CNAB.txt), normalize os dados e armazene-os em um banco de dados relacional e exiba essas informações em tela.
+## Running application locally
 
-**Sua aplicação web DEVE:**
+Running application:
 
-1. Ter uma tela (via um formulário) para fazer o upload do arquivo(pontos extras se não usar um popular CSS Framework )
-2. Interpretar ("parsear") o arquivo recebido, normalizar os dados, e salvar corretamente a informação em um banco de dados relacional, **se atente as documentações** que estão logo abaixo.
-3. Exibir uma lista das operações importadas por lojas, e nesta lista deve conter um totalizador do saldo em conta
-4. Ser escrita na sua linguagem de programação de preferência
-5. Ser simples de configurar e rodar, funcionando em ambiente compatível com Unix (Linux ou Mac OS X). Ela deve utilizar apenas linguagens e bibliotecas livres ou gratuitas.
-6. Git com commits atomicos e bem descritos
-7. PostgreSQL, MySQL ou SQL Server
-8. Ter testes automatizados
-9. Docker compose (Pontos extras se utilizar)
-10. Readme file descrevendo bem o projeto e seu setup
-11. Incluir informação descrevendo como consumir o endpoint da API
+    $ docker-compose up
 
-**Sua aplicação web não precisa:**
+You can even build and run with a single command-line like following:
 
-1. Lidar com autenticação ou autorização (pontos extras se ela fizer, mais pontos extras se a autenticação for feita via OAuth).
-2. Ser escrita usando algum framework específico (mas não há nada errado em usá-los também, use o que achar melhor).
-3. Documentação da api.(Será um diferencial e pontos extras se fizer)
+    $ docker-compose up --build
 
-# Documentação do CNAB
+Now we can visit [ `localhost:4000` ](http://localhost:4000/) from a browser to access the app's interface.
+And there you can upload a CNAB file like [this one](./test/fixtures/CNAB.txt) and see the results like the following screen shot:
 
-| Descrição do campo  | Inicio | Fim | Tamanho | Comentário
-| ------------- | ------------- | -----| ---- | ------
-| Tipo  | 1  | 1 | 1 | Tipo da transação
-| Data  | 2  | 9 | 8 | Data da ocorrência
-| Valor | 10 | 19 | 10 | Valor da movimentação. *Obs.* O valor encontrado no arquivo precisa ser divido por cem(valor / 100.00) para normalizá-lo.
-| CPF | 20 | 30 | 11 | CPF do beneficiário
-| Cartão | 31 | 42 | 12 | Cartão utilizado na transação 
-| Hora  | 43 | 48 | 6 | Hora da ocorrência atendendo ao fuso de UTC-3
-| Dono da loja | 49 | 62 | 14 | Nome do representante da loja
-| Nome loja | 63 | 81 | 19 | Nome da loja
+![App Preview](./app_preview.png)
 
-# Documentação sobre os tipos das transações
 
-| Tipo | Descrição | Natureza | Sinal |
-| ---- | -------- | --------- | ----- |
-| 1 | Débito | Entrada | + |
-| 2 | Boleto | Saída | - |
-| 3 | Financiamento | Saída | - |
-| 4 | Crédito | Entrada | + |
-| 5 | Recebimento Empréstimo | Entrada | + |
-| 6 | Vendas | Entrada | + |
-| 7 | Recebimento TED | Entrada | + |
-| 8 | Recebimento DOC | Entrada | + |
-| 9 | Aluguel | Saída | - |
+## Testing the GraphQL APIs
 
-# Avaliação
+Once the applications is up and running, we can try out the APIs by visiting [ `localhost:4000/api/graphiql` ](http://localhost:4000/api/graphiql) from a browser to access GraphiQL Workspace. The GraphiQL Workspace is GUI where we can edit and test GraphQL queries and mutations.
 
-Seu projeto será avaliado de acordo com os seguintes critérios.
+### Company Transactions Query
 
-1. Sua aplicação preenche os requerimentos básicos?
-2. Você documentou a maneira de configurar o ambiente e rodar sua aplicação?
-3. Você seguiu as instruções de envio do desafio?
-4. Qualidade e cobertura dos testes unitários.
+In order to fetch all financial transactions, we can use the following query as example:
 
-Adicionalmente, tentaremos verificar a sua familiarização com as bibliotecas padrões (standard libs), bem como sua experiência com programação orientada a objetos a partir da estrutura de seu projeto.
+``` graphql
+query {
+  companyTransactions {
+    balance
+    ownerName
+    tradingName
+    transactions {
+      amount
+      card
+      cpf
+      occurredAt
+      transactionType
+    }
+  }
+}
+```
 
-# Referência
+Or if you wish to test with command line, you can try:
 
-Este desafio foi baseado neste outro desafio: https://github.com/lschallenges/data-engineering
+    $ curl 'http://localhost:4000/api/graphql' -H 'content-type: application/json' --data-raw '{ "variables": {}, "query": "{ companyTransactions { balance ownerName tradingName transactions { amount card cpf occurredAt transactionType } } }" }'
 
----
+Both ways should return a result like this:
 
-Boa sorte!
+``` json
+{
+  "data": {
+    "companyTransactions": [
+      {
+        "balance": "-102.0",
+        "ownerName": "JOÃO MACEDO",
+        "tradingName": "BAR DO JOÃO",
+        "transactions": [
+          {
+            "amount": "142.0",
+            "card": "4753****3153",
+            "cpf": "09620676017",
+            "occurredAt": "2019-03-01T15:34:53Z",
+            "transactionType": "FINANCIAMENTO"
+          },
+          {
+            "amount": "152.0",
+            "card": "1234****7890",
+            "cpf": "09620676017",
+            "occurredAt": "2019-03-01T23:30:00Z",
+            "transactionType": "DEBITO"
+          },
+          {
+            "amount": "112.0",
+            "card": "3648****0099",
+            "cpf": "09620676017",
+            "occurredAt": "2019-03-01T23:42:34Z",
+            "transactionType": "BOLETO"
+          }
+        ]
+      },
+      {
+        "balance": "152.32",
+        "ownerName": "MARIA JOSEFINA",
+        "tradingName": "LOJA DO Ó - FILIAL",
+        "transactions": [
+          {
+            "amount": "152.32",
+            "card": "1234****6678",
+            "cpf": "55641815063",
+            "occurredAt": "2019-03-01T10:00:00Z",
+            "transactionType": "CREDITO"
+          }
+        ]
+      },
+      {
+        "balance": "230.0",
+        "ownerName": "MARIA JOSEFINA",
+        "tradingName": "LOJA DO Ó - MATRIZ",
+        "transactions": [
+          {
+            "amount": "102.0",
+            "card": "6228****9090",
+            "cpf": "55641815063",
+            "occurredAt": "2019-03-01T00:00:00Z",
+            "transactionType": "ALUGUEL"
+          },
+          {
+            "amount": "200.0",
+            "card": "1234****3324",
+            "cpf": "55641815063",
+            "occurredAt": "2019-03-01T09:00:02Z",
+            "transactionType": "DEBITO"
+          },
+          {
+            "amount": "132.0",
+            "card": "3123****7687",
+            "cpf": "55641815063",
+            "occurredAt": "2019-03-01T14:56:07Z",
+            "transactionType": "RECEBIMENTO_EMPRESTIMO"
+          }
+        ]
+      },
+      {
+        "balance": "489.2",
+        "ownerName": "MARCOS PEREIRA",
+        "tradingName": "MERCADO DA AVENIDA",
+        "transactions": [
+          {
+            "amount": "102.03",
+            "card": "2344****1222",
+            "cpf": "84515254073",
+            "occurredAt": "2019-03-01T12:32:22Z",
+            "transactionType": "RECEBIMENTO_DOC"
+          },
+          {
+            "amount": "2.0",
+            "card": "2344****1222",
+            "cpf": "84515254073",
+            "occurredAt": "2019-03-01T12:32:22Z",
+            "transactionType": "RECEBIMENTO_DOC"
+          },
+          {
+            "amount": "107.0",
+            "card": "8723****9987",
+            "cpf": "84515254073",
+            "occurredAt": "2019-03-01T12:33:33Z",
+            "transactionType": "BOLETO"
+          },
+          {
+            "amount": "802.0",
+            "card": "3123****7687",
+            "cpf": "84515254073",
+            "occurredAt": "2019-03-01T14:56:07Z",
+            "transactionType": "RECEBIMENTO_EMPRESTIMO"
+          },
+          {
+            "amount": "192.0",
+            "card": "6777****1313",
+            "cpf": "84515254073",
+            "occurredAt": "2019-03-01T17:27:12Z",
+            "transactionType": "FINANCIAMENTO"
+          },
+          {
+            "amount": "122.0",
+            "card": "6777****1313",
+            "cpf": "84515254073",
+            "occurredAt": "2019-03-01T17:27:12Z",
+            "transactionType": "FINANCIAMENTO"
+          },
+          {
+            "amount": "502.0",
+            "card": "8473****1231",
+            "cpf": "84515254073",
+            "occurredAt": "2019-03-01T23:12:33Z",
+            "transactionType": "BOLETO"
+          },
+          {
+            "amount": "506.17",
+            "card": "1234****2231",
+            "cpf": "84515254073",
+            "occurredAt": "2019-06-01T10:00:00Z",
+            "transactionType": "CREDITO"
+          }
+        ]
+      },
+      {
+        "balance": "-7023.0",
+        "ownerName": "JOSÉ COSTA",
+        "tradingName": "MERCEARIA 3 IRMÃOS",
+        "transactions": [
+          {
+            "amount": "109.0",
+            "card": "8723****9987",
+            "cpf": "23270298056",
+            "occurredAt": "2019-03-01T12:33:33Z",
+            "transactionType": "BOLETO"
+          },
+          {
+            "amount": "5.0",
+            "card": "7677****8778",
+            "cpf": "23270298056",
+            "occurredAt": "2019-03-01T14:18:08Z",
+            "transactionType": "BOLETO"
+          },
+          {
+            "amount": "6102.0",
+            "card": "6777****1313",
+            "cpf": "23270298056",
+            "occurredAt": "2019-03-01T17:27:12Z",
+            "transactionType": "FINANCIAMENTO"
+          },
+          {
+            "amount": "602.0",
+            "card": "6777****1313",
+            "cpf": "23270298056",
+            "occurredAt": "2019-03-01T17:27:12Z",
+            "transactionType": "FINANCIAMENTO"
+          },
+          {
+            "amount": "103.0",
+            "card": "6777****1313",
+            "cpf": "23270298056",
+            "occurredAt": "2019-03-01T17:27:12Z",
+            "transactionType": "FINANCIAMENTO"
+          },
+          {
+            "amount": "102.0",
+            "card": "8473****1231",
+            "cpf": "23270298056",
+            "occurredAt": "2019-03-01T23:12:33Z",
+            "transactionType": "BOLETO"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### File Upload Mutation
+
+Last but not least, we can upload a cnab file using the following example:
+
+    $ curl -X POST -F query="mutation { uploadFile(file: \"cnab_file\")}" -F cnab_file=@test/fixtures/CNAB.txt localhost:4000/api/graphql
+
+And the query result should be something like that:
+
+``` json
+{
+  "data": {
+    "uploadFile": "file_uploaded_succesfully"
+  }
+}
+```
+
+After that it's possible to check the result by using the `Company Transactions Query`, accessing the app [ `localhost:4000` ](http://localhost:4000/) or even straight to the database instace using the following commands:
+```bash
+docker exec -it bycoders_cnab_db_1 psql -U postgres
+psql (14.3 (Debian 14.3-1.pgdg110+1))
+Type "help" for help.
+
+postgres=# \c bycoders_cnab_dev 
+You are now connected to database "bycoders_cnab_dev" as user "postgres".
+bycoders_cnab_dev=# select * from transactions;
+```
+
+
+## Code Quality
+
+In order to enforcing a sort of code quality, code coverage and hopefully free of bugs the following Elixir tools was adopted on the project.
+
+- [Credo](https://github.com/rrrene/credo): Is a static code analysis tool that isresponsible for checking if the code is adherent to common good code practices established by the community.
+```bash
+$ mix credo
+```
+- [ExCoveralls](https://github.com/parroty/excoveralls): Is a library that reports test coverage statistics
+```bash
+$ mix coveralls.html
+```
+- [Dialyxir](https://github.com/jeremyjh/dialyxir): Is a tool that helps you find discrepancies in your code, such as: Type errors, Code that raises exceptions, Unsatisfiable conditions, Redundant code, Race conditions
+```bash
+$ mix dialyzer
+```
+- [Sobelow](https://github.com/nccgroup/sobelow): Is a security-focused static analysis tool that can detects security issues like: Cross-Site Scripting, SQL injection, Command injection, Code execution, Denial of Service and so on
+```bash
+$ mix sobelow --config
+```
+Two mix tasks (alias) were created to make the execution of them all simple:
+`quality` and `quality.ci`. The first one could be run on a dev environment and the last should be run on a CI/CD pipeline because it breaks the flow when an error was found.
+
+```bash
+$ mix quality
+$ mix quality.ci
+```
